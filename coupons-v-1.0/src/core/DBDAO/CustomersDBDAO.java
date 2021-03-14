@@ -155,7 +155,7 @@ public class CustomersDBDAO implements CustomersDAO {
 				throw new CouponSystemException("update customer failed - " + customer + " has not been updated ; customer id '" + customer.getId() + "' has not found in database");
 			}
 	
-			System.out.println(">>> " + customer + " updated in " + row + " row");
+			System.out.println(">>> " + customer + " updated in " + row + " row(s)");
 
 		} catch (SQLException e) {
 			throw new CouponSystemException("update customer failed - " + customer + " has not been updated (SQLException)", e);
@@ -180,7 +180,7 @@ public class CustomersDBDAO implements CustomersDAO {
 				throw new CouponSystemException("delete customer failed - customer " + customerID + " has not been deleted ; customer id '" + customerID + "' has not found in database");
 			}
 			
-			System.out.println(">>> customer " + customerID + " deleted from " + row + " row");				
+			System.out.println(">>> customer " + customerID + " deleted from " + row + " row(s)");				
 			
 		} catch (SQLException e) {
 			throw new CouponSystemException("delete customer failed - customer " + customerID + " has not been deleted (SQLException)", e);

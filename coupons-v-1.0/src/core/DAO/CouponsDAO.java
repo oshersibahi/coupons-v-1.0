@@ -1,5 +1,6 @@
 package core.DAO;
 
+import java.sql.Date;
 import java.util.ArrayList;
 
 import core.exceptions.CouponSystemException;
@@ -19,9 +20,9 @@ public interface CouponsDAO {
 	void deleteCoupon(int couponID) throws CouponSystemException;
 	
 	ArrayList<Coupon> getAllCoupons() throws CouponSystemException;
-
-	ArrayList<Coupon> getAllExpiredCoupons() throws CouponSystemException;
 	
+	ArrayList<Integer> getAllExpiredCouponsId() throws CouponSystemException;
+
 	Coupon getOneCoupon(int couponID) throws CouponSystemException;
 	
 	void addCouponPurchase(int customerID, int couponID) throws CouponSystemException;
@@ -45,6 +46,9 @@ public interface CouponsDAO {
 	ArrayList<Coupon> getCompanyCouponsByMaxPrice(int companyID, double maxPrice) throws CouponSystemException;
 
 	int getCouponIdByTitleAndCompanyId(String title, int companyID) throws CouponSystemException;
+
+	void deleteExpiredCoupons() throws CouponSystemException;
+
 
 
 

@@ -1,5 +1,7 @@
 package core.threads.jobs;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -33,13 +35,12 @@ public class CouponExpiriationDailyJob implements Runnable {
 
 			try {
 
-				ArrayList<Coupon> expiredCoupons = couponDAO.getAllExpiredCoupons();
-				for (Coupon coupon : expiredCoupons) {
-					couponDAO.deleteCouponPurchase(coupon.getId());
-					
-					couponDAO.deleteCoupon(coupon.getId());
-					
+				ArrayList<Integer> expiredCouponsId = couponDAO.getAllExpiredCouponsId();
+				for (Integer id : expiredCouponsId) {
+					couponDAO.deleteCouponPurchase(id);	
 				}
+				
+				couponDAO.deleteExpiredCoupons();
 
 //				Thread.sleep(TimeUnit.DAYS.toMillis(1));
 				Thread.sleep(TimeUnit.SECONDS.toMillis(2));

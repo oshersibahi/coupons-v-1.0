@@ -65,9 +65,9 @@ public class TestCouponsDBDAO {
 			}
 			System.out.println("===================================================");
 			
-			ArrayList<Coupon> expiredCoupons = dbdao.getAllExpiredCoupons();
-			for (Coupon coupon : expiredCoupons) {
-				System.out.println(coupon);
+			ArrayList<Integer> expiredCouponsId = dbdao.getAllExpiredCouponsId();
+			for (Integer id : expiredCouponsId) {
+				System.out.println(id);
 			}
 			
 			try {

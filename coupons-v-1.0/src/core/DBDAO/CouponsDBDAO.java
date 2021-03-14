@@ -187,10 +187,28 @@ public class CouponsDBDAO implements CouponsDAO {
 				throw new CouponSystemException("delete coupon by id ; failed - coupon " + couponID + " has not been deleted ; coupon id '" + couponID + "' has not found in database");
 			}
 
-			System.out.println(">>> coupon " + couponID + " deleted from " + row + " row");
+			System.out.println(">>> coupon " + couponID + " deleted from " + row + " row(s)");
 
 		} catch (SQLException e) {
 			throw new CouponSystemException("delete coupon by id ; failed - coupon " + couponID + " has not been deleted (SQLException)", e);
+		} finally {
+			ConnectionPool.getInstance().restoreConnection(con);
+		}
+	}
+
+	@Override
+	public void deleteExpiredCoupons() throws CouponSystemException {
+		String sql = "delete from coupons where CONVERT(date, GETDATE()) > end_date";
+		
+		Connection con = ConnectionPool.getInstance().getConnection();
+		try (PreparedStatement pstmt = con.prepareStatement(sql);) {
+			
+			int row = pstmt.executeUpdate();
+			
+			System.out.println(">>> expired coupons deleted from " + row + " row(s)");
+			
+		} catch (SQLException e) {
+			throw new CouponSystemException("delete expired coupons failed - coupons has not been deleted (SQLException)", e);
 		} finally {
 			ConnectionPool.getInstance().restoreConnection(con);
 		}
@@ -246,45 +264,19 @@ public class CouponsDBDAO implements CouponsDAO {
 	}
 	
 	@Override
-	public ArrayList<Coupon> getAllExpiredCoupons() throws CouponSystemException {
-		String sql = "select * from coupons where CONVERT(date, GETDATE()) > end_date";
-		String sqlCategory = "select category from categories where id =? ";
-		ArrayList<Coupon> coupons = new ArrayList<>();
-		
+	public ArrayList<Integer> getAllExpiredCouponsId() throws CouponSystemException {
+		String sql = "select id from coupons where CONVERT(date, GETDATE()) > end_date";
 		Connection con = ConnectionPool.getInstance().getConnection();
 		
-		try (Statement stmt = con.createStatement();
-				
-				PreparedStatement pstmt = con.prepareStatement(sqlCategory);
-				
-				) {
+		try (Statement stmt = con.createStatement()) {
 			
+			ArrayList<Integer> ids = new ArrayList<>();
 			ResultSet rs = stmt.executeQuery(sql);
 			while (rs.next()) {
-				
-				int categoryId;
-				Coupon coupon = new Coupon();
-				
-				coupon.setId(rs.getInt("id"));
-				coupon.setCompanyID(rs.getInt("company_id"));
-				categoryId = rs.getInt("category_id");
-				coupon.setTitle(rs.getString("title"));
-				coupon.setDescription(rs.getString("description"));
-				coupon.setStartDate(rs.getDate("start_date").toLocalDate());
-				coupon.setEndDate(rs.getDate("end_date").toLocalDate());
-				coupon.setAmount(rs.getInt("amount"));
-				coupon.setPrice(rs.getDouble("price"));
-				coupon.setImage(rs.getString("image"));
-				
-				pstmt.setInt(1, categoryId);
-				ResultSet categoryNameRs = pstmt.executeQuery();
-				categoryNameRs.next();
-				coupon.setCategory(Category.valueOf(categoryNameRs.getString("category")));
-				
-				coupons.add(coupon);
+				ids.add(rs.getInt("id"));
 			}
 			
-			return coupons;
+			return ids;
 			
 		} catch (SQLException e) {
 			throw new CouponSystemException("get all expired coupons failed (SQLException)", e);
